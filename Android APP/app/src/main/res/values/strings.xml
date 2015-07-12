@@ -11,4 +11,7 @@
 
     <string name="email">Email</string>
     <string name="password">Password</string>
+
+    <string name="hint_title">Title</string>
+    <string name="hint_body">Note</string>
 </resources>

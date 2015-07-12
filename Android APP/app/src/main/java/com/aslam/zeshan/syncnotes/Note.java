@@ -3,8 +3,11 @@ package com.aslam.zeshan.syncnotes;
 import com.parse.ParseClassName;
 import com.parse.ParseObject;
 
-@ParseClassName("NoteObject")
-public class NoteObject extends ParseObject {
+import java.io.Serializable;
+
+
+@ParseClassName("Note")
+public class Note extends ParseObject implements Serializable {
 
     public String getTitle() {
         return getString("title");
@@ -22,11 +25,19 @@ public class NoteObject extends ParseObject {
         put("body", value);
     }
 
-    public int getID() {
-        return getInt("ID");
+    public String getID() {
+        return getString("ID");
     }
 
-    public void setID(int value) {
+    public void setID(String value) {
         put("ID", value);
+    }
+
+    public String getOwner() {
+        return getString("ownerID");
+    }
+
+    public void setOwner(String value) {
+        put("ownerID", value);
     }
 }

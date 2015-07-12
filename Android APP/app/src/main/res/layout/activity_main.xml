@@ -19,7 +19,7 @@
     </ListView>
 
     <com.getbase.floatingactionbutton.FloatingActionButton
-        android:id="@+id/addEmail"
+        android:id="@+id/createNote"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"

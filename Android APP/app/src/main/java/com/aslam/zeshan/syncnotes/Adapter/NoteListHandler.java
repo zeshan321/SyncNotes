@@ -5,7 +5,7 @@ import android.content.Context;
 import android.widget.ListView;
 
 import com.aslam.zeshan.syncnotes.Database.NotesDatabase;
-import com.aslam.zeshan.syncnotes.NoteObject;
+import com.aslam.zeshan.syncnotes.Note;
 import com.aslam.zeshan.syncnotes.R;
 
 public class NoteListHandler  {
@@ -30,15 +30,15 @@ public class NoteListHandler  {
 
         NotesDatabase notesDatabase = new NotesDatabase(con);
 
-        for (NoteObject noteObject : notesDatabase.getNotes()) {
-            emailsArrayAdapater.add(noteObject);
+        for (Note note : notesDatabase.getNotes()) {
+            emailsArrayAdapater.add(note);
         }
 
         listView.setAdapter(emailsArrayAdapater);
     }
 
-    public void add(NoteObject noteObject) {
-        emailsArrayAdapater.add(noteObject);
+    public void add(Note note) {
+        emailsArrayAdapater.add(note);
 
         emailsArrayAdapater.notifyDataSetChanged();
     }

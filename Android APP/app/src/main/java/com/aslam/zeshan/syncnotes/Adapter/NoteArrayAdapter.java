@@ -11,17 +11,17 @@ import android.widget.TextView;
 
 import com.amulyakhare.textdrawable.TextDrawable;
 import com.amulyakhare.textdrawable.util.ColorGenerator;
-import com.aslam.zeshan.syncnotes.NoteObject;
+import com.aslam.zeshan.syncnotes.Note;
 import com.aslam.zeshan.syncnotes.R;
 import com.aslam.zeshan.syncnotes.Util.StringUtil;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class NoteArrayAdapter extends ArrayAdapter<NoteObject> {
+public class NoteArrayAdapter extends ArrayAdapter<Note> {
 
-    List<NoteObject> emailsList = new ArrayList<NoteObject>();
-    List<NoteObject> etList = new ArrayList<NoteObject>();
+    List<Note> emailsList = new ArrayList<Note>();
+    List<Note> etList = new ArrayList<Note>();
 
     String last;
     Context con;
@@ -34,7 +34,7 @@ public class NoteArrayAdapter extends ArrayAdapter<NoteObject> {
     }
 
     @Override
-    public void add(NoteObject object) {
+    public void add(Note object) {
         emailsList.add(object);
         super.add(object);
     }
@@ -47,16 +47,16 @@ public class NoteArrayAdapter extends ArrayAdapter<NoteObject> {
     }
 
     @Override
-    public void remove(NoteObject object) {
+    public void remove(Note object) {
         emailsList.remove(object);
         super.remove(object);
     }
 
-    public void add(int i, NoteObject object) {
+    public void add(int i, Note object) {
         emailsList.add(i, object);
     }
 
-    public void set(int i, NoteObject object) {
+    public void set(int i, Note object) {
         emailsList.set(i, object);
     }
 
@@ -64,16 +64,27 @@ public class NoteArrayAdapter extends ArrayAdapter<NoteObject> {
         return this.emailsList.size();
     }
 
-    public NoteObject getItem(int index) {
+    public Note getItem(int index) {
         return this.emailsList.get(index);
     }
 
-    public void removeEmail(int index) {
+    public Note getByID(String value) {
+        Note note = null;
+        for (Note note1 : emailsList) {
+            if (note1.getID().equals(value)) {
+                note = note1;
+                break;
+            }
+        }
+        return note;
+    }
+
+    public void removeNote(int index) {
         emailsList.remove(index);
     }
 
     public View getView(int position, View row, ViewGroup parent) {
-        NoteObject noteObject = getItem(position);
+        Note note = getItem(position);
         LayoutInflater inflater = (LayoutInflater) this.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         row = inflater.inflate(R.layout.note_list_view, parent, false);
 
@@ -81,12 +92,18 @@ public class NoteArrayAdapter extends ArrayAdapter<NoteObject> {
         TextView body = (TextView) row.findViewById(R.id.listPreview);
         ImageView image = (ImageView) row.findViewById(R.id.selected);
 
-        title.setText(noteObject.getTitle());
-        body.setText(noteObject.getBody());
+        title.setText(note.getTitle());
+        body.setText(note.getBody());
 
         ColorGenerator generator = ColorGenerator.DEFAULT;
 
-        String s = String.valueOf(noteObject.getTitle().charAt(0)).toUpperCase();
+        String s = null;
+        try {
+            s = String.valueOf(note.getTitle().charAt(0)).toUpperCase();
+        } catch(StringIndexOutOfBoundsException e) {
+            s = "*";
+        }
+
         int color2 = generator.getColor(s);
 
         TextDrawable drawable = TextDrawable.builder()
@@ -114,11 +131,11 @@ public class NoteArrayAdapter extends ArrayAdapter<NoteObject> {
             }
 
             FilterResults filterResults = new FilterResults();
-            ArrayList<NoteObject> tempList = new ArrayList<>();
+            ArrayList<Note> tempList = new ArrayList<>();
 
-            for (NoteObject NoteObject: emailsList) {
-                if (!etList.contains(NoteObject)) {
-                    etList.add(NoteObject);
+            for (Note Note : emailsList) {
+                if (!etList.contains(Note)) {
+                    etList.add(Note);
                 }
             }
 
@@ -127,13 +144,13 @@ public class NoteArrayAdapter extends ArrayAdapter<NoteObject> {
             }
 
             if (new StringUtil().checkString(constraint.toString())) {
-                for (NoteObject NoteObject : emailsList) {
+                for (Note Note : emailsList) {
 
-                    String name = NoteObject.getTitle().toLowerCase();
-                    String email = NoteObject.getBody().toLowerCase();
+                    String name = Note.getTitle().toLowerCase();
+                    String email = Note.getBody().toLowerCase();
 
                     if (name.contains(constraint.toString().toLowerCase()) || email.contains(constraint.toString().toLowerCase())) {
-                        tempList.add(NoteObject);
+                        tempList.add(Note);
                     }
                 }
             } else {
@@ -154,7 +171,7 @@ public class NoteArrayAdapter extends ArrayAdapter<NoteObject> {
         @SuppressWarnings("unchecked")
         @Override
         protected void publishResults(CharSequence contraint, FilterResults results) {
-            emailsList = (ArrayList<NoteObject>) results.values;
+            emailsList = (ArrayList<Note>) results.values;
             notifyDataSetChanged();
         }
     };

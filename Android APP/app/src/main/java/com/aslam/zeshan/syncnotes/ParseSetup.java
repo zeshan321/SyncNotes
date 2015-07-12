@@ -6,6 +6,7 @@ import android.content.Context;
 import com.aslam.zeshan.syncnotes.Util.SettingsManager;
 import com.parse.Parse;
 import com.parse.ParseInstallation;
+import com.parse.ParseObject;
 
 public class ParseSetup extends Application {
 
@@ -18,6 +19,10 @@ public class ParseSetup extends Application {
 
         com.parse.Parse.enableLocalDatastore(con);
         //ParseCrashReporting.enable(this);
+
+        // Register subclasses
+        ParseObject.registerSubclass(Note.class);
+
         Parse.initialize(con, getResources().getString(R.string.parse_app_id), getResources().getString(R.string.parse_client_key));
 
         Thread thread = new Thread(new Runnable() {
