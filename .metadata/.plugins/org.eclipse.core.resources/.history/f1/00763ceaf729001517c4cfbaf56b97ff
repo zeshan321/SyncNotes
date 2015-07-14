@@ -1,0 +1,76 @@
+package com.zeshan.syncnotes;
+
+import java.awt.BorderLayout;
+import java.awt.EventQueue;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.border.EmptyBorder;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import javax.swing.JList;
+
+public class NoteList extends JFrame {
+
+	private JPanel contentPane;
+	
+	public NoteList frame;
+
+	/**
+	 * Launch the application.
+	 */
+	public static void main(String[] args) {
+		EventQueue.invokeLater(new Runnable() {
+			public void run() {
+				try {
+					NoteList frame = new NoteList();
+					frame.setVisible(true);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		});
+	}
+
+	/**
+	 * Create the frame.
+	 */
+	public NoteList createFrame() {
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setBounds(100, 100, 450, 300);
+		contentPane = new JPanel();
+		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
+		setContentPane(contentPane);
+		contentPane.setLayout(null);
+		
+		List<String> data = new ArrayList<String>();
+		JList<String> list = new JList<String>();
+		
+		for (Note note: new Database().getNoteList()) {
+			data.add(note.getTitle());
+		}
+		String[] strarray = new String[data.size()];
+		data.toArray(strarray);
+		
+		list.setListData(strarray);
+		list.setBounds(10, 242, 414, -230);
+		contentPane.add(list);
+		
+		list.addListSelectionListener(new ListSelectionListener() {
+		    public void valueChanged(ListSelectionEvent event) {
+		        if (!event.getValueIsAdjusting()){
+		            JList source = (JList)event.getSource();
+		            String selected = source.getSelectedValue().toString();
+		        }
+		    }
+		});
+		
+		return this;
+	}
+	
+	public void showFrame() {
+		frame.setVisible(true);
+	}
+}

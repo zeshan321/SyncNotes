@@ -10,7 +10,9 @@ import org.parse4j.ParseObject;
 @ParseClassName("Note")
 public class Note extends ParseObject implements Serializable {
 
-    public String getTitle() {
+	private static final long serialVersionUID = 1L;
+
+	public String getTitle() {
         return getString("title");
     }
 

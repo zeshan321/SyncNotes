@@ -1,0 +1,22 @@
+package com.zeshan.syncnotes;
+
+import java.io.File;
+import java.io.IOException;
+
+public class FileHandler {
+	
+	File file;
+	
+	public FileHandler() {
+		file = new File("ID.sn");
+		try {
+			file.createNewFile();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	public void add(String ID) {
+		
+	}
+}

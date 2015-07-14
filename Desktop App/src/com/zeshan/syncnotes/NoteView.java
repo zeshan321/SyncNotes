@@ -1,19 +1,13 @@
 package com.zeshan.syncnotes;
 
-import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.EventQueue;
 import java.awt.Point;
-import java.awt.TextField;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
-import javax.swing.JRootPane;
 import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
-import javax.swing.border.EmptyBorder;
 
 import java.awt.Font;
 import java.awt.event.MouseEvent;
@@ -23,21 +17,30 @@ import java.awt.event.MouseMotionListener;
 import javax.swing.JTextPane;
 
 public class NoteView extends JFrame {
-	public NoteView() {
-	}
+
+	private static final long serialVersionUID = 1L;
+
 
 	public NoteView frame;
 	
 	private JPanel pane;
 	private Point mouseDownCompCoords;
 	private JTextField textField;
+	private JTextPane textPane;
+	private ComponentResizer cr = new ComponentResizer();
+	
+	private String ID;
+	private int x;
+	private int y;
 	
 
 	/**
 	 * Create the frame.
-	 * @return 
 	 */
-	public NoteView createFrame(String title, String body) {
+	
+	public NoteView createFrame(String ID, String title, String body) {
+		this.ID = ID;
+		
 		setBounds(100, 100, 450, 300);
 		
 		pane = (JPanel) getContentPane();
@@ -61,26 +64,24 @@ public class NoteView extends JFrame {
 		scrollPane.setBorder(javax.swing.BorderFactory.createEmptyBorder());
 		pane.add(scrollPane);
 		
-		JTextPane textPane = new JTextPane();
+		textPane = new JTextPane();
 		scrollPane.setViewportView(textPane);
 		textPane.setText(body);
 		textPane.setBorder(javax.swing.BorderFactory.createEmptyBorder());
 		textPane.setBackground(hexToColor("#FFE981"));
-		
-		
-		
 		
 		return this;
 	}
 	
 	public void showFrame() {
 		dragListener();
-		
-		ComponentResizer cr = new ComponentResizer();
 		cr.registerComponent(frame);
 				
         frame.setUndecorated(true);
 		frame.setVisible(true);
+		
+		// Hide from tool bar.
+		//frame.setType(javax.swing.JFrame.Type.UTILITY);
 	}
 	
 	private Color hexToColor(String colorStr) {
@@ -115,6 +116,9 @@ public class NoteView extends JFrame {
             public void mouseDragged(MouseEvent e) {
                 Point currCoords = e.getLocationOnScreen();
                 frame.setLocation(currCoords.x - mouseDownCompCoords.x, currCoords.y - mouseDownCompCoords.y);
+                
+                x = currCoords.x - mouseDownCompCoords.x;
+                y = currCoords.y - mouseDownCompCoords.y;
             }
         });
 	}
