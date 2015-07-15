@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.text.*?>
+<?import javafx.scene.control.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.layout.AnchorPane?>
+
+<AnchorPane prefHeight="407.0" prefWidth="532.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.NoteController">
+   <children>
+   <Label fx:id="label_status" alignment="CENTER" layoutX="-7.0" layoutY="-3.0" prefHeight="36.0" prefWidth="483.0" style="-fx-background-color: #000000;" text="" textFill="WHITE" visible="false">
+         <font>
+            <Font size="18.0" />
+         </font>
+      </Label>
+      
+      <ListView fx:id="notes_list" layoutX="4.0" layoutY="159.0" prefHeight="234.0" prefWidth="525.0" />
+   </children>
+</AnchorPane>
