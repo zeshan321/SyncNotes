@@ -12,3 +12,5 @@
 hs_err_pid*
 *.index
 *.metadata
+*.log
+*.fdx
