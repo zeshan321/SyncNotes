@@ -2,11 +2,16 @@ package application;
 
 import java.io.IOException;
 
+import Util.Database;
+import Util.Location;
+import Util.Note;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 
 public class NotesList extends Application {
 	
@@ -19,6 +24,7 @@ public class NotesList extends Application {
         this.primaryStage.setTitle("Notes");
 		
         initRootLayout();
+        loadNotes();
     }
 
 	public void initRootLayout() {
@@ -36,6 +42,39 @@ public class NotesList extends Application {
             e.printStackTrace();
         }
     }
+	
+	private void loadNotes() {
+		for (Note note: new Database().getNoteList()) {
+			if (note.getStatus()) {
+        	try {
+				FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("NoteView.fxml"));
+				Parent root1 = (Parent) fxmlLoader.load();
+
+				NoteViewController controller = fxmlLoader.<NoteViewController> getController();
+				controller.setNote(note);
+				controller.setTitle(note.getTitle());
+				controller.setBody(note.getBody());
+
+				Stage stage = new Stage();
+				stage.setScene(new Scene(root1));
+
+				stage.initStyle(StageStyle.TRANSPARENT);
+
+				// Set previous location
+				Location loc = new Database().getLoc(note.getID());
+				System.out.println(loc.X);
+				if (loc.X != 0 || loc.Y != 0) {
+					stage.setX(loc.X);
+					stage.setY(loc.Y);
+				}
+
+				stage.show();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			}
+        }
+	}
 	
 	 /**
      * Returns the main stage.

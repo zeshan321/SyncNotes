@@ -11,6 +11,8 @@ import org.parse4j.ParseObject;
 public class Note extends ParseObject implements Serializable {
 
 	private static final long serialVersionUID = 1L;
+	
+	public boolean status;
 
 	public String getTitle() {
         return getString("title");
@@ -42,5 +44,13 @@ public class Note extends ParseObject implements Serializable {
 
     public void setOwner(String value) {
         put("ownerID", value);
+    }
+    
+    public boolean getStatus() {
+    	return status;
+    }
+    
+    public void setStatus(boolean status) {
+    	this.status = status;
     }
 }

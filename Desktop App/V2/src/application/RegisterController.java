@@ -13,6 +13,7 @@ import Util.Note;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
@@ -23,8 +24,11 @@ public class RegisterController {
 	@FXML private Button button_start;
 	@FXML private TextField textfield_uuid;
 	@FXML private Label label_status;
-
+	
 	@FXML protected void button_start(ActionEvent event) {
+		Node source = (Node)  event.getSource(); 
+	    Stage stage  = (Stage) source.getScene().getWindow();
+		
 		setStatus("Loading...");
 		
 		ParseQuery<ParseObject> query = ParseQuery.getQuery("_Installation");
@@ -52,7 +56,7 @@ public class RegisterController {
 								
 								Database database = new Database();
 								if (database.contains(note.getID())) {
-									database.update(note, "null", "closed");
+									database.update(note, 0, 0, "closed");
 								} else {
 									database.addNote(note);
 								}
@@ -61,6 +65,7 @@ public class RegisterController {
 							Platform.runLater(new Runnable() {
 					            public void run() {             
 					                try {
+					                	stage.close();
 										new NotesList().start(new Stage());
 									} catch (Exception e) {
 										e.printStackTrace();
