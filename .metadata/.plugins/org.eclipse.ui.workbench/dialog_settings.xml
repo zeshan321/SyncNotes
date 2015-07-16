@@ -24,4 +24,10 @@
 			<item value="org.eclipse.fx.ide"/>
 		</list>
 	</section>
+	<section name="ImportExportAction">
+		<item value="org.boris.winrun4j.eclipse.ExportWizard" key="ImportExportPage.STORE_SELECTED_EXPORT_WIZARD_ID"/>
+		<list key="ImportExportPage.STORE_EXPANDED_EXPORT_CATEGORIES">
+			<item value="org.eclipse.jdt.ui.Java"/>
+		</list>
+	</section>
 </section>

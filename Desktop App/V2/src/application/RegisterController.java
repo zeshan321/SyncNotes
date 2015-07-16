@@ -79,12 +79,11 @@ public class RegisterController {
 		});
 	}
 	
-	private void setStatus(String status) {
-		label_status.setVisible(true);
-		
+	private void setStatus(String status) {		
 		Platform.runLater(new Runnable() {
 	        @Override
 	        public void run() {
+	    		label_status.setVisible(true);
 	        	label_status.setText(status);
 	        }
 	   });

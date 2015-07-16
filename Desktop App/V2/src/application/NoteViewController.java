@@ -2,9 +2,18 @@ package application;
 
 import java.net.URL;
 import java.util.ResourceBundle;
+import java.util.Timer;
+import java.util.TimerTask;
+
+import org.parse4j.ParseException;
+import org.parse4j.callback.SaveCallback;
 
 import Util.Database;
 import Util.Note;
+import Util.StringUtil;
+import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -19,26 +28,29 @@ import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 
 public class NoteViewController implements Initializable {
-	
+
 	@FXML private Label note_title;
+	@FXML private Label label_save;
 	@FXML private TextArea note_body;
 	@FXML private AnchorPane note_pane;
 	@FXML private Button note_close;
 
 	private Note note;
-	
+
 	private double initialX;
 	private double initialY;
-	
-	
+	private double newX;
+	private double newY;
+
+
 	public void setTitle(String title) {
 		note_title.setText(title);
 	}
-	
+
 	public void setBody(String body) {
 		note_body.setText(body);
 	}
-	
+
 	public void setNote(Note note) {
 		this.note = note;
 	}
@@ -46,42 +58,93 @@ public class NoteViewController implements Initializable {
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {	
 		note_pane.setOnMousePressed(new EventHandler<MouseEvent>() {
-	        @Override
-	        public void handle(MouseEvent me) {
-	            if (me.getButton() != MouseButton.MIDDLE) {
-	                initialX = me.getSceneX();
-	                initialY = me.getSceneY();
-	            }
-	        }
-	    });
+			@Override
+			public void handle(MouseEvent me) {
+				if (me.getButton() != MouseButton.MIDDLE) {
+					initialX = me.getSceneX();
+					initialY = me.getSceneY();
+				}
+			}
+		});
 
 		note_pane.setOnMouseDragged(new EventHandler<MouseEvent>() {
-	        @Override
-	        public void handle(MouseEvent me) {
-	            if (me.getButton() != MouseButton.MIDDLE) {
-	            	note_pane.getScene().getWindow().setX(me.getScreenX() - initialX);
-	            	note_pane.getScene().getWindow().setY(me.getScreenY() - initialY);
-	            	
-	            }
-	        }
-	    });
-		
+			@Override
+			public void handle(MouseEvent me) {
+				if (me.getButton() != MouseButton.MIDDLE) {
+					newX = me.getScreenX() - initialX;
+					newY = me.getScreenY() - initialY;
+					
+					note_pane.getScene().getWindow().setX(newX);
+					note_pane.getScene().getWindow().setY(newY);
+
+				}
+			}
+		});
+
 		note_pane.setOnMouseReleased(new EventHandler<MouseEvent>() {
-	        @Override
-	        public void handle(MouseEvent me) {
-	        	Database db = new Database();
-            	db.update(note, me.getScreenX() - initialX, me.getScreenY() - initialY, "OPEN");  
-	        }
+			@Override
+			public void handle(MouseEvent me) {
+				Database db = new Database();
+				db.update(note, me.getScreenX() - initialX, me.getScreenY() - initialY, "OPEN");  
+			}
+		});
+		
+		note_body.focusedProperty().addListener(new ChangeListener<Boolean>()
+		{
+		    @Override
+		    public void changed(ObservableValue<? extends Boolean> arg0, Boolean oldPropertyValue, Boolean newPropertyValue)
+		    {
+		        if (!newPropertyValue) {
+		        	Platform.runLater(new Runnable() {
+						@Override public void run() {
+							note.setBody(note_body.getText());
+							setStatus("Saving...");
+
+							note.saveInBackground(new SaveCallback() {
+								public void done(ParseException e) {
+									if (e == null) {
+										setStatus("Saved!");
+									} else {
+										setStatus("Failed!");
+									}
+								}
+							});
+							
+							Database db = new Database();
+							db.update(note, newX, newY, "OPEN");
+						}
+					});
+		        }
+		    }
 		});
 	}
-	
+
 	@FXML protected void note_close(ActionEvent event) {
 		Node source = (Node)  event.getSource(); 
-	    Stage stage  = (Stage) source.getScene().getWindow();
-	    
-	    Database db = new Database();
-    	db.update(note, stage.getScene().getX() - initialX, stage.getScene().getY() - initialY, "CLOSED");  
-    	
-    	stage.close();
+		Stage stage  = (Stage) source.getScene().getWindow();
+
+		Database db = new Database();
+		db.update(note, stage.getScene().getX() - initialX, stage.getScene().getY() - initialY, "CLOSED");  
+
+		note.saveInBackground();
+
+		stage.close();
+	}
+
+	private void setStatus(String status) {
+		Platform.runLater(new Runnable() {
+			@Override
+			public void run() {
+				label_save.setVisible(true);
+				label_save.setText(status);
+				
+				new Timer().schedule(new TimerTask() {          
+				    @Override
+				    public void run() {
+				    	label_save.setVisible(false);     
+				    }
+				}, 2000);
+			}
+		});
 	}
 }
