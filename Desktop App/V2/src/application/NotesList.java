@@ -1,22 +1,27 @@
 package application;
 
 import java.io.IOException;
+import java.util.HashMap;
 
 import Util.Database;
 import Util.Location;
 import Util.Note;
 import javafx.application.Application;
+import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import javafx.stage.WindowEvent;
 
 public class NotesList extends Application {
 	
 	private Stage primaryStage;
     private AnchorPane rootLayout;
+    
+    public static HashMap<String, NoteViewController> stageMap = new HashMap<>();
 
 	@Override
 	public void start(Stage primaryStage) throws Exception {
@@ -38,6 +43,13 @@ public class NotesList extends Application {
             Scene scene = new Scene(rootLayout);
             primaryStage.setScene(scene);
             primaryStage.show();
+            
+            primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
+                @Override
+				public void handle(WindowEvent we) {
+                	//AutoUpdater.running = false;
+                }
+            });       
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -62,13 +74,15 @@ public class NotesList extends Application {
 
 				// Set previous location
 				Location loc = new Database().getLoc(note.getID());
-				System.out.println(loc.X);
 				if (loc.X != 0 || loc.Y != 0) {
 					stage.setX(loc.X);
 					stage.setY(loc.Y);
 				}
+				
 
 				stage.show();
+
+				stageMap.put(note.getID(), controller);
 			} catch (IOException e) {
 				e.printStackTrace();
 			}

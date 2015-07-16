@@ -100,6 +100,8 @@ public class NoteController implements Initializable {
 					}
 
 					stage.show();
+					
+					NotesList.stageMap.put(note.getID(), controller);
 				} catch (IOException e) {
 					e.printStackTrace();
 				}

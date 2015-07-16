@@ -10,7 +10,6 @@ import org.parse4j.callback.SaveCallback;
 
 import Util.Database;
 import Util.Note;
-import Util.StringUtil;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -54,6 +53,14 @@ public class NoteViewController implements Initializable {
 	public void setNote(Note note) {
 		this.note = note;
 	}
+	
+	public Label getTitle() {
+		return note_title;
+	}
+	
+	public TextArea getBody() {
+		return note_body;
+	}
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {	
@@ -77,6 +84,7 @@ public class NoteViewController implements Initializable {
 					note_pane.getScene().getWindow().setX(newX);
 					note_pane.getScene().getWindow().setY(newY);
 
+					note_pane.requestFocus();
 				}
 			}
 		});
@@ -85,7 +93,9 @@ public class NoteViewController implements Initializable {
 			@Override
 			public void handle(MouseEvent me) {
 				Database db = new Database();
-				db.update(note, me.getScreenX() - initialX, me.getScreenY() - initialY, "OPEN");  
+				db.update(note, me.getScreenX() - initialX, me.getScreenY() - initialY, true);  
+				
+				note_pane.requestFocus();
 			}
 		});
 		
@@ -95,12 +105,17 @@ public class NoteViewController implements Initializable {
 		    public void changed(ObservableValue<? extends Boolean> arg0, Boolean oldPropertyValue, Boolean newPropertyValue)
 		    {
 		        if (!newPropertyValue) {
+		        	if (note.getBody().equals(note_body.getText())) {
+		        		return;
+		        	}
+		        	
 		        	Platform.runLater(new Runnable() {
 						@Override public void run() {
 							note.setBody(note_body.getText());
 							setStatus("Saving...");
 
 							note.saveInBackground(new SaveCallback() {
+								@Override
 								public void done(ParseException e) {
 									if (e == null) {
 										setStatus("Saved!");
@@ -111,7 +126,7 @@ public class NoteViewController implements Initializable {
 							});
 							
 							Database db = new Database();
-							db.update(note, newX, newY, "OPEN");
+							db.update(note, newX, newY, true);
 						}
 					});
 		        }
@@ -124,7 +139,7 @@ public class NoteViewController implements Initializable {
 		Stage stage  = (Stage) source.getScene().getWindow();
 
 		Database db = new Database();
-		db.update(note, stage.getScene().getX() - initialX, stage.getScene().getY() - initialY, "CLOSED");  
+		db.update(note, stage.getScene().getX() - initialX, stage.getScene().getY() - initialY, false);  
 
 		note.saveInBackground();
 

@@ -1,5 +1,6 @@
 package application;
 	
+import Util.AutoUpdater;
 import Util.FileHandler;
 import Util.ParseSetup;
 import javafx.application.Application;
@@ -31,6 +32,7 @@ public class Main extends Application {
 	                javafx.application.Application.launch(NotesList.class);
 	            }
 	        }.start();
+	        new AutoUpdater().start();
 		} else {
 			new Thread() {
 	            @Override

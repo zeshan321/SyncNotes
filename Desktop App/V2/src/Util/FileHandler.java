@@ -33,18 +33,35 @@ public class FileHandler {
 
 	public boolean registered() {
 		boolean isRegistered = true;
-		
+
 		try {
 			List<String> fileLines = Files.readAllLines(file.toPath());
-			
+
 			if (fileLines.isEmpty()) {
 				isRegistered = false;
 			}
-			
+
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		
+
 		return isRegistered;
+	}
+
+	public String getID() {
+		String ID = null;
+
+		try {
+			List<String> fileLines = Files.readAllLines(file.toPath());
+
+			if (!fileLines.isEmpty()) {
+				ID = fileLines.get(0);
+			}
+
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		return ID;
 	}
 }

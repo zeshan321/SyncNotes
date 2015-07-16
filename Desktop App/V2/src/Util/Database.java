@@ -13,6 +13,7 @@ public class Database {
 	
     String TABLE_CONTACTS = "NotesList";
     String KEY_ID = "ID";
+    String KEY_OBJECT = "objectID";
     String KEY_NAME = "title";
     String KEY_EMAIL = "body";
     String KEY_LOCX = "locX";
@@ -29,7 +30,7 @@ public class Database {
 			statement = c.createStatement();
 			
 			String CREATE_CONTACTS_TABLE = "CREATE TABLE IF NOT EXISTS " + TABLE_CONTACTS + "("
-	                + KEY_ID + " STRING PRIMARY KEY," + KEY_NAME + " TEXT," + KEY_EMAIL + " TEXT," + KEY_LOCX + " DOUBLE," + KEY_LOCY + " DOUBLE, " + KEY_STATUS + " TEXT)";
+	                + KEY_ID + " STRING PRIMARY KEY, objectID " + KEY_OBJECT + ", " + KEY_NAME + " TEXT," + KEY_EMAIL + " TEXT," + KEY_LOCX + " DOUBLE," + KEY_LOCY + " DOUBLE, " + KEY_STATUS + " BOOLEAN)";
 			
 			statement.execute(CREATE_CONTACTS_TABLE);
 			statement.close();
@@ -46,14 +47,15 @@ public class Database {
 			c = DriverManager.getConnection("jdbc:sqlite:notes.db");
 			
 			PreparedStatement statement = c.prepareStatement(
-		            "INSERT INTO " + TABLE_CONTACTS + " (ID,title,body,locX,locY,status) VALUES(?,?,?,?,?,?)");
+		            "INSERT INTO " + TABLE_CONTACTS + " (ID,objectID,title,body,locX,locY,status) VALUES(?,?,?,?,?,?,?)");
 			
 		        statement.setString(1, note.getID());
-		        statement.setString(2, note.getTitle());
-		        statement.setString(3, note.getBody());
-		        statement.setDouble(4, 0);
+		        statement.setString(2, note.getObjectId());
+		        statement.setString(3, note.getTitle());
+		        statement.setString(4, note.getBody());
 		        statement.setDouble(5, 0);
-		        statement.setString(6, "closed");
+		        statement.setDouble(6, 0);
+		        statement.setBoolean(7, false);
 		        statement.execute();
 
 		        c.close();
@@ -77,6 +79,7 @@ public class Database {
 		    	  if (rs.getString("ID").equals(ID)) {
 		    		  note = new Note();
 		    		  note.setID(ID);
+		    		  note.setObjectId(rs.getString("objectID"));
 		    		  note.setTitle(rs.getString("title"));
 		    		  note.setBody(rs.getString("body"));
 		    		  break;
@@ -107,14 +110,10 @@ public class Database {
 		      while ( rs.next() ) {
 		    		  Note note = new Note();
 		    		  note.setID(rs.getString("ID"));
+		    		  note.setObjectId(rs.getString("objectID"));
 		    		  note.setTitle(rs.getString("title"));
 		    		  note.setBody(rs.getString("body"));
-		    		  
-		    		  if (rs.getString("status").equals("OPEN")) {
-		    			  note.setStatus(true);
-		    		  } else {
-		    			  note.setStatus(false);
-		    		  }
+		    		  note.setStatus(rs.getBoolean("status"));
 		    		  
 		    		  list.add(note);
 		      }
@@ -156,21 +155,22 @@ public class Database {
 		return exists;
 	}
 	
-	public void update(Note note, double x, double y, String status) {
+	public void update(Note note, double x, double y, boolean status) {
 		Connection c = null;
 		try {
 			Class.forName("org.sqlite.JDBC");
 			c = DriverManager.getConnection("jdbc:sqlite:notes.db");
 			
 			PreparedStatement statement = c.prepareStatement(
-		            "UPDATE " + TABLE_CONTACTS + " SET title = ?, body = ?, locX = ?,  locY =?, status = ? WHERE ID = ?;");
+		            "UPDATE " + TABLE_CONTACTS + " SET objectID = ?, title = ?, body = ?, locX = ?,  locY = ?, status = ? WHERE ID = ?;");
 			
-		        statement.setString(1, note.getTitle());
-		        statement.setString(2, note.getBody());
-		        statement.setDouble(3, x);
-		        statement.setDouble(4, y);
-		        statement.setString(5, status);
-		        statement.setString(6, note.getID());
+				statement.setString(1, note.getObjectId());
+		        statement.setString(2, note.getTitle());
+		        statement.setString(3, note.getBody());
+		        statement.setDouble(4, x);
+		        statement.setDouble(5, y);
+		        statement.setBoolean(6, status);
+		        statement.setString(7, note.getID());
 		        statement.executeUpdate();
 
 		        c.close();

@@ -7,6 +7,7 @@ import org.parse4j.ParseObject;
 import org.parse4j.ParseQuery;
 import org.parse4j.callback.FindCallback;
 
+import Util.AutoUpdater;
 import Util.Database;
 import Util.FileHandler;
 import Util.Note;
@@ -56,17 +57,19 @@ public class RegisterController {
 								
 								Database database = new Database();
 								if (database.contains(note.getID())) {
-									database.update(note, 0, 0, "closed");
+									database.update(note, 0, 0, false);
 								} else {
 									database.addNote(note);
 								}
 							}
 							
 							Platform.runLater(new Runnable() {
-					            public void run() {             
+					            @Override
+								public void run() {             
 					                try {
 					                	stage.close();
 										new NotesList().start(new Stage());
+										new AutoUpdater().start();
 									} catch (Exception e) {
 										e.printStackTrace();
 									}
