@@ -1,2 +1,7 @@
 # SyncNotes
-SyncNotes is an Android app that syncs with your PC/Mac widget on your desktop.
+SyncNotes is a notes application that synchronizes with connected devices.
+
+Supported devices:
+- Android
+- Windows
+- Mac
