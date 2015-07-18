@@ -17,7 +17,6 @@ public class AutoUpdater extends Thread {
 	@Override
 	public void run() {
 		while (running) {
-			System.out.println("Running...");
 			try {
 				final ParseQuery<Note> query = ParseQuery.getQuery("Note");
 

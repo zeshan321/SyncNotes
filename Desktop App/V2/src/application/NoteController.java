@@ -101,6 +101,9 @@ public class NoteController implements Initializable {
 
 					stage.show();
 					
+					Database db = new Database();
+					db.update(note, loc.X, loc.Y, true);
+					
 					NotesList.stageMap.put(note.getID(), controller);
 				} catch (IOException e) {
 					e.printStackTrace();
