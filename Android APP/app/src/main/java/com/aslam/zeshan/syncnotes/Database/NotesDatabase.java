@@ -22,6 +22,7 @@ public class NotesDatabase extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "Notes";
     private static final String TABLE_CONTACTS = "NotesList";
     private static final String KEY_ID = "ID";
+    private static final String KEY_OBJECT = "objectID";
     private static final String KEY_NAME = "title";
     private static final String KEY_EMAIL = "body";
 
@@ -34,7 +35,7 @@ public class NotesDatabase extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         String CREATE_CONTACTS_TABLE = "CREATE TABLE " + TABLE_CONTACTS + "("
-                + KEY_ID + " STRING PRIMARY KEY," + KEY_NAME + " TEXT," + KEY_EMAIL + " TEXT)";
+                + KEY_ID + " STRING PRIMARY KEY," + KEY_OBJECT + " TEXT," + KEY_NAME + " TEXT," + KEY_EMAIL + " TEXT)";
 
         db.execSQL(CREATE_CONTACTS_TABLE);
     }
@@ -43,11 +44,12 @@ public class NotesDatabase extends SQLiteOpenHelper {
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
     }
 
-    public void addNote(String ID, String title, String body) {
+    public void addNote(String ID, String objectID, String title, String body) {
         SQLiteDatabase db = this.getWritableDatabase();
 
         ContentValues values = new ContentValues();
         values.put(KEY_ID, ID);
+        values.put(KEY_OBJECT, objectID);
         values.put(KEY_NAME, title);
         values.put(KEY_EMAIL, body);
 
@@ -82,12 +84,14 @@ public class NotesDatabase extends SQLiteOpenHelper {
 
             if (cursor != null && cursor.moveToFirst()) {
                 while (!cursor.isAfterLast()) {
-                    String ID = cursor.getString(cursor.getColumnIndex("ID"));
+                    String ID = cursor.getString(cursor.getColumnIndex(KEY_ID));
+                    String objectID = cursor.getString(cursor.getColumnIndex(KEY_OBJECT));
                     String title = cursor.getString(cursor.getColumnIndex(KEY_NAME));
                     String body = cursor.getString(cursor.getColumnIndex(KEY_EMAIL));
 
                     Note note = new Note();
                     note.setID(ID);
+                    note.setObjectId(objectID);
                     note.setTitle(title);
                     note.setBody(body);
                     note.setOwner(new SettingsManager(con).getString("ID"));
@@ -117,12 +121,14 @@ public class NotesDatabase extends SQLiteOpenHelper {
 
             if (cursor != null && cursor.moveToFirst()) {
                 while (!cursor.isAfterLast()) {
-                    String ID1 = cursor.getString(cursor.getColumnIndex("ID"));
+                    String ID1 = cursor.getString(cursor.getColumnIndex(KEY_ID));
+                    String objectID = cursor.getString(cursor.getColumnIndex(KEY_OBJECT));
                     String title = cursor.getString(cursor.getColumnIndex(KEY_NAME));
                     String body = cursor.getString(cursor.getColumnIndex(KEY_EMAIL));
                     if (ID.equals(ID1)) {
                         note = new Note();
                         note.setID(ID);
+                        note.setObjectId(objectID);
                         note.setTitle(title);
                         note.setBody(body);
                         note.setOwner(new SettingsManager(con).getString("ID"));

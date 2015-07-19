@@ -29,6 +29,7 @@ public class NotesUpdater {
                     for (Note note : parseObjects) {
                         if (note != null) {
                             String ID = note.getID();
+                            String objectID = note.getObjectId();
                             String title = note.getTitle();
                             String body = note.getBody();
 
@@ -45,7 +46,7 @@ public class NotesUpdater {
                                 NoteListHandler noteListHandler = new NoteListHandler(con);
                                 noteListHandler.add(note);
 
-                                notesDatabase.addNote(ID, title, body);
+                                notesDatabase.addNote(ID, objectID, title, body);
                             }
                         }
                     }

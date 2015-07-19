@@ -11,6 +11,8 @@ import android.widget.TextView;
 import com.aslam.zeshan.syncnotes.Adapter.NoteListHandler;
 import com.aslam.zeshan.syncnotes.Database.NotesDatabase;
 import com.aslam.zeshan.syncnotes.Util.SettingsManager;
+import com.parse.ParseException;
+import com.parse.SaveCallback;
 
 import java.util.UUID;
 
@@ -58,6 +60,7 @@ public class NoteActivity extends ActionBarActivity {
         switch (item.getItemId()) {
             case android.R.id.home:
                 saveData();
+                System.out.println("SAVING 1");
 
                 Intent intent = new Intent(con, MainActivity.class);
                 con.startActivity(intent);
@@ -76,8 +79,6 @@ public class NoteActivity extends ActionBarActivity {
 
     @Override
     public void onDestroy() {
-        saveData();
-
         super.onDestroy();
     }
 
@@ -90,21 +91,32 @@ public class NoteActivity extends ActionBarActivity {
 
         note.saveEventually();
 
-        // Save to client database
-        NotesDatabase notesDatabase = new NotesDatabase(con);
-        if (notesDatabase.contains(ID)) {
-            notesDatabase.update(ID, title.getText().toString(), body.getText().toString());
+        note.saveInBackground(new SaveCallback() {
+            @Override
+            public void done(ParseException e) {
+                if (e == null) {
+                    // Save to client database
+                    NotesDatabase notesDatabase = new NotesDatabase(con);
+                    if (notesDatabase.contains(ID))
 
-            Note updateNote = NoteListHandler.emailsArrayAdapater.getByID(ID);
-            updateNote.setTitle(title.getText().toString());
-            updateNote.setBody(body.getText().toString());
-        } else {
-            notesDatabase.addNote(ID, title.getText().toString(), body.getText().toString());
+                    {
+                        notesDatabase.update(ID, title.getText().toString(), body.getText().toString());
 
-            NoteListHandler noteListHandler = new NoteListHandler(con);
-            noteListHandler.add(note);
-        }
+                        Note updateNote = NoteListHandler.emailsArrayAdapater.getByID(ID);
+                        updateNote.setTitle(title.getText().toString());
+                        updateNote.setBody(body.getText().toString());
+                    } else
 
-        NoteListHandler.emailsArrayAdapater.notifyDataSetChanged();
+                    {
+                        notesDatabase.addNote(ID, note.getObjectId(), title.getText().toString(), body.getText().toString());
+
+                        NoteListHandler noteListHandler = new NoteListHandler(con);
+                        noteListHandler.add(note);
+                    }
+
+                    NoteListHandler.emailsArrayAdapater.notifyDataSetChanged();
+                }
+            }
+        });
     }
 }

@@ -15,3 +15,6 @@ hs_err_pid*
 *.log
 *.fdx
 *.gen
+*.gen
+*0.log
+*.log

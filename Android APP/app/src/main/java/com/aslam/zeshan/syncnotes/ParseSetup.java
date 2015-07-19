@@ -17,7 +17,7 @@ public class ParseSetup extends Application {
         super.onCreate();
         con = this;
 
-        com.parse.Parse.enableLocalDatastore(con);
+        //com.parse.Parse.enableLocalDatastore(con);
         //ParseCrashReporting.enable(this);
 
         // Register subclasses
