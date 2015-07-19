@@ -6,6 +6,7 @@ import org.parse4j.ParseException;
 import org.parse4j.ParseQuery;
 import org.parse4j.callback.FindCallback;
 
+import application.NoteController;
 import application.NoteViewController;
 import application.NotesList;
 import javafx.application.Platform;
@@ -30,6 +31,8 @@ public class AutoUpdater extends Thread {
 								db.update(note, 0, 0, false);
 							} else {
 								db.addNote(note);
+								
+								NoteController.items.add(note);
 							}
 
 							NoteViewController controller = NotesList.stageMap.get(note.getID());
@@ -49,7 +52,8 @@ public class AutoUpdater extends Thread {
 					}
 				});
 				
-				sleep(300000);
+				SettingsHandler sh = new SettingsHandler();
+				sleep(Integer.parseInt(sh.getSetting("Auto-sync")) * 60 * 1000);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}

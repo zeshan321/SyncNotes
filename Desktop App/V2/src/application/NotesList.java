@@ -11,6 +11,7 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
@@ -26,7 +27,7 @@ public class NotesList extends Application {
 	@Override
 	public void start(Stage primaryStage) throws Exception {
 		this.primaryStage = primaryStage;
-        this.primaryStage.setTitle("Notes");
+        this.primaryStage.setTitle("SyncNotes");
 		
         initRootLayout();
         loadNotes();
@@ -42,6 +43,7 @@ public class NotesList extends Application {
             // Show the scene containing the root layout.
             Scene scene = new Scene(rootLayout);
             primaryStage.setScene(scene);
+            primaryStage.getIcons().add(new Image("file:logo.png"));
             primaryStage.show();
             
             primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>() {

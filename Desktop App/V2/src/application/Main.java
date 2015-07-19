@@ -3,6 +3,7 @@ package application;
 import Util.AutoUpdater;
 import Util.FileHandler;
 import Util.ParseSetup;
+import Util.SettingsHandler;
 import javafx.application.Application;
 import javafx.stage.Stage;
 
@@ -40,6 +41,10 @@ public class Main extends Application {
 	                javafx.application.Application.launch(Register.class);
 	            }
 	        }.start();
+	        
+	        // Add default settings
+	        SettingsHandler sh = new SettingsHandler();
+	        sh.set("Auto-sync: 5");
 		}
 	}
 }
