@@ -17,33 +17,49 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.ListCell;
+import javafx.scene.control.ListView;
 import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
+import javafx.util.Callback;
 
 public class NoteViewController implements Initializable {
 
-	@FXML private Label note_title;
+	@FXML private TextField note_title;
 	@FXML private Label label_save;
 	@FXML private TextArea note_body;
 	@FXML private AnchorPane note_pane;
 	@FXML private Button note_close;
 
 	private Note note;
+	private NoteController notecontroller;
 
 	private double initialX;
 	private double initialY;
 	private double newX;
 	private double newY;
 
+	public void setController(NoteController notecontroller) {
+		this.notecontroller = notecontroller;
+	}
 
 	public void setTitle(String title) {
 		note_title.setText(title);
+		
+		try {
+			updateList(note);
+		} catch (NullPointerException e1) {
+			System.out.println("Error modifying list!");
+		}
 	}
 
 	public void setBody(String body) {
@@ -54,7 +70,7 @@ public class NoteViewController implements Initializable {
 		this.note = note;
 	}
 	
-	public Label getTitle() {
+	public TextField getTitle() {
 		return note_title;
 	}
 	
@@ -127,6 +143,53 @@ public class NoteViewController implements Initializable {
 							
 							Database db = new Database();
 							db.update(note, newX, newY, true);
+							
+							try {
+								updateList(note);
+							} catch (NullPointerException e1) {
+								System.out.println("Error modifying list!");
+							}
+						}
+					});
+		        }
+		    }
+		});
+		
+		note_title.focusedProperty().addListener(new ChangeListener<Boolean>()
+		{
+		    @Override
+		    public void changed(ObservableValue<? extends Boolean> arg0, Boolean oldPropertyValue, Boolean newPropertyValue)
+		    {
+		        if (!newPropertyValue) {
+		        	if (note.getTitle().equals(note_title.getText())) {
+		        		return;
+		        	}
+		        	
+		        	Platform.runLater(new Runnable() {
+						@Override public void run() {
+							note.setTitle(note_title.getText());
+							setStatus("Saving...");
+
+							note.saveInBackground(new SaveCallback() {
+								@Override
+								public void done(ParseException e) {
+									if (e == null) {
+										setStatus("Saved!");
+									} else {
+										setStatus("Failed!");
+										e.printStackTrace();
+									}
+								}
+							});
+							
+							Database db = new Database();
+							db.update(note, newX, newY, true);
+							
+							try {
+								updateList(note);
+							} catch (NullPointerException e1) {
+								System.out.println("Error modifying list!");
+							}
 						}
 					});
 		        }
@@ -144,6 +207,55 @@ public class NoteViewController implements Initializable {
 		note.saveInBackground();
 
 		stage.close();
+	}
+	
+	private void updateList(Note note) {
+		if (NoteController.items == null) {
+			return;
+		}
+		
+		for (int i = 0; i < NoteController.items.size(); i++) {
+			Note tempNote = NoteController.items.get(i);
+			if (tempNote.getID().equals(note.getID())) {
+				NoteController.items.set(i, note);
+				break;
+			}
+		}
+		NoteController notecontroller = this.notecontroller;
+		notecontroller.getList().setCellFactory(new Callback<ListView<Note>, ListCell<Note>>(){
+
+			@Override
+			public ListCell<Note> call(ListView<Note> param) {
+				ListCell<Note> cell = new ListCell<Note>(){
+
+					@Override
+					public void updateItem(Note note, boolean empty) {
+						super.updateItem(note, empty);
+						if (empty) {
+							setText(null);
+							setGraphic(null);
+						} else {
+							setText(null);
+
+							GridPane grid = new GridPane();
+							grid.setHgap(10);
+							grid.setVgap(4);
+							grid.setPadding(new Insets(0, 10, 0, 10));
+
+							Label name = new Label(note.getTitle());
+							grid.add(name, 1, 0);
+
+							Label dt = new Label(note.getID());
+							grid.add(dt, 1, 1);            
+
+							setGraphic(grid);
+						}
+					}
+				};
+
+				return cell;
+			}
+		});
 	}
 
 	private void setStatus(String status) {
